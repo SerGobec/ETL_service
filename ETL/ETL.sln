@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.32126.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ETL_ConsoleApp", "ETL_ConsoleApp\ETL_ConsoleApp.csproj", "{B074C13B-FA99-4296-AD00-39B0AB852B14}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{206C1393-BFD8-4C3A-AF52-D24C6F5884B1}"
+	ProjectSection(SolutionItems) = preProject
+		configs.json = configs.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
