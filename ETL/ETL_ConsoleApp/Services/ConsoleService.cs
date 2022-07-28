@@ -38,14 +38,16 @@ namespace ETL_ConsoleApp.Services
                     switch (num)
                     {
                         case 1:
-                            _etlService.Start();
+                            WriteNotifMessage(_etlService.Start());
                             break;
                         case 2:
-                            _etlService.Stop();
+                            WriteNotifMessage(_etlService.Stop());
                             break;
                         case 3:
-                            _etlService.Restart();
+                            WriteNotifMessage(_etlService.Restart());
                             break;
+                        case 0:
+                            return;
                         default:
                             ConsoleWriteErrorMessage("Unknown command!");
                             break;
@@ -62,6 +64,13 @@ namespace ETL_ConsoleApp.Services
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(message);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        private void WriteNotifMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nResult: " + message + "\n");
             Console.ForegroundColor = ConsoleColor.White;
         }
 

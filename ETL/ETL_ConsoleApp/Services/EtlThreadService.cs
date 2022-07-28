@@ -1,9 +1,11 @@
 ﻿using ETL_ConsoleApp.Interfaces;
+using ETL_ConsoleApp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,16 +23,31 @@ namespace ETL_ConsoleApp.Services
             token = cancelTokenSource.Token;
             try
             {
+                StartConfigWays startConfigWays = new StartConfigWays();
+                using (StreamReader streamReader = new StreamReader(DirectoryService.GetConfigFilePath()))
+                {
+                    string config = streamReader.ReadToEnd();
+                    if (config == "") return "Config file is empty";
+                    StartConfigWays ways2 = new StartConfigWays();
+                    ways2 = (StartConfigWays)JsonSerializer.Deserialize(config, ways2.GetType(), null);
+                    
+                    Console.WriteLine(ways2.InputFilesFolderWay);
+                    Console.WriteLine(ways2.OutputFilesFolderWay);
+                }
                 if (_thread != null && _thread.IsAlive) return "System already works";
                 stream = File.OpenRead(DirectoryService.GetConfigFilePath());
-                Console.WriteLine("Thread started");
-                _thread = new Thread(Checking);
+                _thread = new Thread(Action);
                 _thread.Start();
                 return "Thread succesfully started!";
-            } catch (Exception ex)
+            } catch (FileNotFoundException)
+            {
+                return "Config file was not found. System NOT STARTED!";
+            }
+            catch (Exception ex)
             {
                 return ex.Message;
-            } finally
+            }
+            finally
             {
                 if(stream != null) stream.Close();
             }
@@ -41,7 +58,6 @@ namespace ETL_ConsoleApp.Services
             try
             {
                 cancelTokenSource.Cancel();
-                Console.WriteLine("Stopped");
                 return "Thread stopped";
             } catch (Exception ex)
             {
@@ -56,12 +72,12 @@ namespace ETL_ConsoleApp.Services
             return "Restarted";
         }
 
-        public void Checking()
+        public void Action()
         {
+            
             while (true)
             {
                 if (token.IsCancellationRequested) return;
-                Console.WriteLine("Hello");
                 Thread.Sleep(1000);
             }
         }
