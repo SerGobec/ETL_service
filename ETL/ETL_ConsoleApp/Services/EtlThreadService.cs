@@ -9,13 +9,16 @@ using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Services
 {
-    class EtlService : IEtlService
+    class EtlThreadService : IEtlThreadService
     {
         Thread _thread;
-
+        private CancellationTokenSource cancelTokenSource;
+        private CancellationToken token;
         public string Start()
         {
             FileStream stream = null;
+            cancelTokenSource = new CancellationTokenSource();
+            token = cancelTokenSource.Token;
             try
             {
                 if (_thread != null && _thread.IsAlive) return "System already works";
@@ -31,16 +34,13 @@ namespace ETL_ConsoleApp.Services
             {
                 if(stream != null) stream.Close();
             }
-
-            
-            throw new NotImplementedException();
         }
 
         public string Stop()
         {
             try
             {
-                _thread.Abort();
+                cancelTokenSource.Cancel();
                 Console.WriteLine("Stopped");
                 return "Thread stopped";
             } catch (Exception ex)
@@ -60,9 +60,9 @@ namespace ETL_ConsoleApp.Services
         {
             while (true)
             {
+                if (token.IsCancellationRequested) return;
                 Console.WriteLine("Hello");
                 Thread.Sleep(1000);
-                return;
             }
         }
     }

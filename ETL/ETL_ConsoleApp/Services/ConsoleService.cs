@@ -10,7 +10,7 @@ namespace ETL_ConsoleApp.Services
 {
     class ConsoleService : IDisposable
     {
-        IEtlService _etlService;
+        IEtlThreadService _etlService;
         string introduction = "Please, enter num of action:" +
                     "\n1. Start system" +
                     "\n2. Stop system" +
@@ -18,7 +18,7 @@ namespace ETL_ConsoleApp.Services
                     "\n0. Exit";
         public ConsoleService()
         {
-            _etlService = new EtlService();
+            _etlService = new EtlThreadService();
         }
 
         public void Start()

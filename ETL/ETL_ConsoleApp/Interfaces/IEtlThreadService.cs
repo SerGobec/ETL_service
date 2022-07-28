@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Interfaces
 {
-    interface IEtlService
+    interface IEtlThreadService
     {
         string Start();
         string Stop();
