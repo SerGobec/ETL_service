@@ -74,6 +74,12 @@ namespace ETL_ConsoleApp.Services
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        private void WriteSuccesMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nResult: " + message + "\n");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
         public void Dispose()
         {
             _etlService = null;

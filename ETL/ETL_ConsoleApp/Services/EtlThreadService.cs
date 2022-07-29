@@ -13,29 +13,28 @@ namespace ETL_ConsoleApp.Services
 {
     class EtlThreadService : IEtlThreadService
     {
-        Thread _thread;
+        private Thread _thread;
         private CancellationTokenSource cancelTokenSource;
         private CancellationToken token;
+        FileCheckerService _fileCheckerService;
+
+        public EtlThreadService()
+        {
+            
+        }
         public string Start()
         {
-            FileStream stream = null;
             cancelTokenSource = new CancellationTokenSource();
             token = cancelTokenSource.Token;
+            if(_fileCheckerService == null)
+            {
+                _fileCheckerService = new FileCheckerService();
+                KeyValuePair<bool,string> result = _fileCheckerService.Create();
+                if (!result.Key) return result.Value;
+            }
             try
             {
-                StartConfigWays startConfigWays = new StartConfigWays();
-                using (StreamReader streamReader = new StreamReader(DirectoryService.GetConfigFilePath()))
-                {
-                    string config = streamReader.ReadToEnd();
-                    if (config == "") return "Config file is empty";
-                    StartConfigWays ways2 = new StartConfigWays();
-                    ways2 = (StartConfigWays)JsonSerializer.Deserialize(config, ways2.GetType(), null);
-                    
-                    Console.WriteLine(ways2.InputFilesFolderWay);
-                    Console.WriteLine(ways2.OutputFilesFolderWay);
-                }
                 if (_thread != null && _thread.IsAlive) return "System already works";
-                stream = File.OpenRead(DirectoryService.GetConfigFilePath());
                 _thread = new Thread(Action);
                 _thread.Start();
                 return "Thread succesfully started!";
@@ -46,10 +45,6 @@ namespace ETL_ConsoleApp.Services
             catch (Exception ex)
             {
                 return ex.Message;
-            }
-            finally
-            {
-                if(stream != null) stream.Close();
             }
         }
 
@@ -78,6 +73,7 @@ namespace ETL_ConsoleApp.Services
             while (true)
             {
                 if (token.IsCancellationRequested) return;
+                _fileCheckerService.Pulse();
                 Thread.Sleep(1000);
             }
         }
