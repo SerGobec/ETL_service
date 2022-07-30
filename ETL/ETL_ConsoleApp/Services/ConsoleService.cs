@@ -47,6 +47,7 @@ namespace ETL_ConsoleApp.Services
                             WriteNotifMessage(_etlService.Restart());
                             break;
                         case 0:
+                            _etlService.Exit();
                             return;
                         default:
                             ConsoleWriteErrorMessage("Unknown command!");

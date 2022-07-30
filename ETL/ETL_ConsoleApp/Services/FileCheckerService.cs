@@ -11,21 +11,23 @@ namespace ETL_ConsoleApp.Services
 {
     class FileCheckerService
     {
-        private DateTime _curentDate;
+        private DateTime _currentDate;
         private int _checkedFilesCounter;
         private int _checkedLinesCounter;
         private int _invalidLinesCounter;
         List<string> checkedTxt;
         StartConfigWays _ways;
-        ReadedFilesService _readed;
+        ProccessedFilesService _readed;
+        ParserService _parserService;
 
         public FileCheckerService()
         {
-            _curentDate = DateTime.Today;
+            _currentDate = DateTime.Today;
             _checkedFilesCounter = 0;
             _checkedLinesCounter = 0;
             _invalidLinesCounter = 0;
             checkedTxt = new List<string>();
+            _parserService = new ParserService();
         }
         public KeyValuePair<bool, string> Create()
         {
@@ -44,7 +46,7 @@ namespace ETL_ConsoleApp.Services
             }
             try
             {
-                _readed = new ReadedFilesService(_ways.OutputFilesFolderWay + @"\readed.json");
+                _readed = new ProccessedFilesService(_ways.OutputFilesFolderWay + @"\readed.json");
                 checkedTxt = _readed.GetReadedTxt();
             } catch(Exception ex)
             {
@@ -55,7 +57,7 @@ namespace ETL_ConsoleApp.Services
 
         public void Pulse()
         {
-            if(_curentDate != DateTime.Today)
+            if(_currentDate != DateTime.Today)
             {
                 CreateDayReport();
             }
@@ -77,6 +79,7 @@ namespace ETL_ConsoleApp.Services
                 {
                     Console.WriteLine(way);
                     checkedTxt.Add(way);
+                    _parserService.ParseTxtToObject(way);
                     await _readed.AddToProccessedAsync(new ReadedFileRecord()
                     {
                         Date = DateTime.Now,

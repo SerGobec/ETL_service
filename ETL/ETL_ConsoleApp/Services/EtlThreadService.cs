@@ -67,6 +67,14 @@ namespace ETL_ConsoleApp.Services
             return "Restarted";
         }
 
+        public void Exit()
+        {
+            Stop();
+            _thread = null;
+            _fileCheckerService = null;
+            cancelTokenSource = null;
+        }
+
         public void Action()
         {
             

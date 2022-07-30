@@ -11,5 +11,6 @@ namespace ETL_ConsoleApp.Interfaces
         string Start();
         string Stop();
         string Restart();
+        void Exit();
     }
 }

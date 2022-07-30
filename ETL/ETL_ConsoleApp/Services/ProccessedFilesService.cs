@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Services
 {
-    class ReadedFilesService
+    class ProccessedFilesService
     {
         readonly string fileWay;
         object locker = new object();
         List<ReadedFileRecord> records;
-        public ReadedFilesService(string fileWay)
+        public ProccessedFilesService(string fileWay)
         {
             if (File.Exists(fileWay))
             {
@@ -33,7 +33,6 @@ namespace ETL_ConsoleApp.Services
                     using (FileStream fileStream = File.Create(fileWay)) { }
                     this.fileWay = fileWay;
                 }
-                
             }
            
         }

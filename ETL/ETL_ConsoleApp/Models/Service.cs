@@ -11,5 +11,16 @@ namespace ETL_ConsoleApp.Models
         public string Name{get;set;}
         public List<Payer> Payers { get; set; }
         public decimal Total { get; set; }
+
+        public void AddPayer(Payer payer)
+        {
+            this.Payers.Add(payer);
+            this.Total += payer.Payment;
+        }
+
+        public Service()
+        {
+            Payers = new List<Payer>();
+        }
     }
 }
