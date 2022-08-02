@@ -53,6 +53,7 @@ namespace ETL_ConsoleApp.Services
             {
                 _readed = new ProccessedFilesService(_ways.OutputFilesFolderWay + @"\readed.json");
                 checkedTxt = _readed.GetReadedTxt();
+                checkedCsv = _readed.GetReadedCsv();
             } catch(Exception ex)
             {
                 return new KeyValuePair<bool, string>(false, ex.Message);

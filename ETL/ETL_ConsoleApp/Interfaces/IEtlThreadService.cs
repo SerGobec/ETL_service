@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ETL_ConsoleApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,9 @@ namespace ETL_ConsoleApp.Interfaces
 {
     interface IEtlThreadService
     {
-        string Start();
-        string Stop();
-        string Restart();
+        KeyValuePair<MessageTypeResult, string> Start();
+        KeyValuePair<MessageTypeResult, string> Stop();
+        KeyValuePair<MessageTypeResult, string> Restart();
         void Exit();
     }
 }

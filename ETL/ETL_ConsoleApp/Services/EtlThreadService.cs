@@ -22,7 +22,7 @@ namespace ETL_ConsoleApp.Services
         {
             
         }
-        public string Start()
+        public KeyValuePair<MessageTypeResult, string> Start()
         {
             cancelTokenSource = new CancellationTokenSource();
             token = cancelTokenSource.Token;
@@ -30,42 +30,42 @@ namespace ETL_ConsoleApp.Services
             {
                 _fileCheckerService = new FileCheckerService();
                 KeyValuePair<bool,string> result = _fileCheckerService.Create();
-                if (!result.Key) return result.Value;
+                if (!result.Key) return new KeyValuePair<MessageTypeResult, string>(MessageTypeResult
+                    .Fault, result.Value);
             }
             try
             {
-                if (_thread != null && _thread.IsAlive) return "System already works";
+                if (_thread != null && _thread.IsAlive) return new KeyValuePair<MessageTypeResult, string>(MessageTypeResult.Notification, "System already works");
                 _thread = new Thread(Action);
                 _thread.Start();
-                return "Thread succesfully started!";
+                return new KeyValuePair<MessageTypeResult, string>(MessageTypeResult.Success, "Thread succesfully started!");
             } catch (FileNotFoundException)
             {
-                return "Config file was not found. System NOT STARTED!";
+                return new KeyValuePair<MessageTypeResult, string>(MessageTypeResult.Fault, "Config file was not found. System NOT STARTED!");
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                return new KeyValuePair<MessageTypeResult, string>(MessageTypeResult.Fault, ex.Message);
             }
         }
 
-        public string Stop()
+        public KeyValuePair<MessageTypeResult, string> Stop()
         {
             try
             {
-                if (cancelTokenSource == null) return "Thread already stopped!";
+                if (cancelTokenSource == null) return new KeyValuePair<MessageTypeResult, string>(MessageTypeResult.Notification, "Thread wasn`t started.");
                 cancelTokenSource.Cancel();
-                return "Thread stopped";
+                return new KeyValuePair<MessageTypeResult, string>(MessageTypeResult.Success, "Thread stopped");
             } catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return ex.Message;
+                return new KeyValuePair<MessageTypeResult, string>(MessageTypeResult.Fault, ex.Message);
             }
         }
-        public string Restart()
+        public KeyValuePair<MessageTypeResult, string> Restart()
         {
             Stop();
             Start();
-            return "Restarted";
+            return new KeyValuePair<MessageTypeResult, string>(MessageTypeResult.Success, "Restarted");
         }
 
         public void Exit()
