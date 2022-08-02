@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Models
 {
-    class Service
+    public class Service
     {
         public string Name{get;set;}
         public List<Payer> Payers { get; set; }

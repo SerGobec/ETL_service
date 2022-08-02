@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Models
 {
-    class FileReport
+    public class FileReport
     {
         public List<CityReport> CityReports { get; set; }
         public long ParsedLine { get; set; }

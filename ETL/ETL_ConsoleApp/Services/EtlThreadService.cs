@@ -52,6 +52,7 @@ namespace ETL_ConsoleApp.Services
         {
             try
             {
+                if (cancelTokenSource == null) return "Thread already stopped!";
                 cancelTokenSource.Cancel();
                 return "Thread stopped";
             } catch (Exception ex)

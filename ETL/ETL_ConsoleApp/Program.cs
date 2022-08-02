@@ -19,7 +19,13 @@ namespace ETL_ConsoleApp
             ways.InputFilesFolderWay = TryGetSolutionDirectoryInfo().FullName + @"\INPUT_FILES";
             ways.OutputFilesFolderWay = TryGetSolutionDirectoryInfo().FullName + @"\OUTPUT_FILES";
             string serialised = JsonSerializer.Serialize(ways, ways.GetType());
-             DirectoryInfo info = TryGetSolutionDirectoryInfo();*/
+
+            using (StreamWriter writer = new StreamWriter(TryGetSolutionDirectoryInfo().FullName + @"\configs.json" ))
+            {
+                writer.Write(serialised);
+            }
+
+            DirectoryInfo info = TryGetSolutionDirectoryInfo();*/
             //Console.WriteLine(info.FullName + @"\configs.json");
 
             //Directory.CreateDirectory(ways.InputFilesFolderWay);
@@ -44,7 +50,7 @@ namespace ETL_ConsoleApp
         }
 
 
-        public static DirectoryInfo TryGetSolutionDirectoryInfo(string currentPath = null)
+        /*public static DirectoryInfo TryGetSolutionDirectoryInfo(string currentPath = null)
         {
             var directory = new DirectoryInfo(
                 currentPath ?? Directory.GetCurrentDirectory());
@@ -53,6 +59,6 @@ namespace ETL_ConsoleApp
                 directory = directory.Parent;
             }
             return directory;
-        }
+        }*/
     }
 }

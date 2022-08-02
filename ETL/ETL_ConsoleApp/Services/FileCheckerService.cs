@@ -12,10 +12,14 @@ namespace ETL_ConsoleApp.Services
     class FileCheckerService
     {
         private DateTime _currentDate;
-        private int _checkedFilesCounter;
-        private int _checkedLinesCounter;
-        private int _invalidLinesCounter;
+        private long _checkedFilesCounter;
+        private List<string> _invalidFilesWays;
+        private long _checkedLinesCounter;
+        private long _invalidLinesCounter;
+        private object _locker = new object();
+        
         List<string> checkedTxt;
+        List<string> checkedCsv;
         StartConfigWays _ways;
         ProccessedFilesService _readed;
         ParserService _parserService;
@@ -27,6 +31,7 @@ namespace ETL_ConsoleApp.Services
             _checkedLinesCounter = 0;
             _invalidLinesCounter = 0;
             checkedTxt = new List<string>();
+            checkedCsv = new List<string>();
             _parserService = new ParserService();
         }
         public KeyValuePair<bool, string> Create()
@@ -59,14 +64,24 @@ namespace ETL_ConsoleApp.Services
         {
             if(_currentDate != DateTime.Today)
             {
-                CreateDayReport();
+                CreateDayReport(this._currentDate);
+                _currentDate = DateTime.Today;
             }
             CheckForNewTxtFiles();
+            CheckForNewCsvFiles();
         }
 
-        public void CreateDayReport()
+        public async void CreateDayReport(DateTime dateTime)
         {
-
+            await ReportService.SaveDayReportJsonAsync(new OutputDayReportModel()
+            {
+                Date = dateTime,
+                DirectoryWay = this._ways.OutputFilesFolderWay,
+                FoundErrors = this._invalidLinesCounter,
+                InvalidFiles = this._invalidFilesWays,
+                ParsedFiles = this._checkedFilesCounter,
+                ParsedLines = this._checkedLinesCounter
+            }) ;
         }
 
         public async void CheckForNewTxtFiles()
@@ -79,11 +94,69 @@ namespace ETL_ConsoleApp.Services
                 {
                     Console.WriteLine(way);
                     checkedTxt.Add(way);
-                    _parserService.ParseTxtToObject(way);
+                    FileReport report = _parserService.ParseTxtToReport(way);
+                    long FilesCounter;
+                    lock (_locker)
+                    {
+                        _checkedFilesCounter += 1;
+                        FilesCounter = _checkedFilesCounter;
+                    }
+                    _checkedLinesCounter += report.ParsedLine;
+                    if(report.InvalidLine > 0)
+                    {
+                        _invalidLinesCounter += report.InvalidLine;
+                        _invalidFilesWays.Add(way);
+                    }
                     await _readed.AddToProccessedAsync(new ReadedFileRecord()
                     {
                         Date = DateTime.Now,
                         Way = way
+                    });
+                    await ReportService.SaveFileReportJsonAsync(new OutputFileModel()
+                    {
+                        Date = _currentDate,
+                        FileNumber = FilesCounter,
+                        fileReport = report,
+                        OutputDirWay = _ways.OutputFilesFolderWay
+                    });
+                }
+            }
+        }
+
+        public async void CheckForNewCsvFiles()
+        {
+            List<string> csvfiles = Directory.GetFiles(_ways.InputFilesFolderWay, "*.csv").ToList();
+            List<string> concat = csvfiles.Except(checkedCsv).ToList();
+            if (concat.Count > 0)
+            {
+                foreach (string way in concat)
+                {
+                    Console.WriteLine(way);
+                    checkedCsv.Add(way);
+                    FileReport report = _parserService.ParseCsvToReport(way);
+                    long FilesCounter;
+                    lock (_locker)
+                    {
+                        _checkedFilesCounter += 1;
+                        FilesCounter = _checkedFilesCounter;
+                    }
+                    _checkedLinesCounter += report.ParsedLine;
+                    if (report.InvalidLine > 0)
+                    {
+                        _invalidLinesCounter += report.InvalidLine;
+                        _invalidFilesWays.Add(way);
+                    }
+                    await _readed.AddToProccessedAsync(new ReadedFileRecord()
+                    {
+                        Date = DateTime.Now,
+                        Way = way
+                    });
+                    await ReportService.SaveFileReportJsonAsync(new OutputFileModel()
+                    {
+                        Date = _currentDate,
+                        FileNumber = _checkedFilesCounter,
+                        fileReport = report,
+                        OutputDirWay = _ways.OutputFilesFolderWay
                     });
                 }
             }
