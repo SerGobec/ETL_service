@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Interfaces
 {
-    public interface IProccessedTxt : IProcessedFile
+    public interface IProcessedTxt : IProcessedFile
     {
         public List<string> GetReadedTxt();
     }

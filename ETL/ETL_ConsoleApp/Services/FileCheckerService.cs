@@ -22,9 +22,14 @@ namespace ETL_ConsoleApp.Services
         
         List<string> checkedTxt;
         List<string> checkedCsv;
+
         StartConfigWays _ways;
-        ProccessedFilesService _readed;
-        ParserService _parserService;
+ 
+        IProcessedTxt _txtProcessed;
+        IProcessedCsv _csvProcessed;
+
+        ICsvParser _csvParser;
+        ITxtParser _txtParser;
 
         public FileCheckerService()
         {
@@ -34,7 +39,9 @@ namespace ETL_ConsoleApp.Services
             _invalidLinesCounter = 0;
             checkedTxt = new List<string>();
             checkedCsv = new List<string>();
-            _parserService = new ParserService();
+            ParserService _parserService = new ParserService();
+            _csvParser = _parserService;
+            _txtParser = _parserService;
             _invalidFilesWays = new List<string>();
         }
         public KeyValuePair<bool, string> Create()
@@ -54,9 +61,11 @@ namespace ETL_ConsoleApp.Services
             }
             try
             {
-                _readed = new ProccessedFilesService(_ways.OutputFilesFolderWay + @"\readed.json");
-                checkedTxt = _readed.GetReadedTxt();
-                checkedCsv = _readed.GetReadedCsv();
+                ProccessedFilesService _readed = new ProccessedFilesService(_ways.OutputFilesFolderWay + @"\readed.json");
+                _txtProcessed = _readed;
+                _csvProcessed = _readed;
+                checkedTxt = _txtProcessed.GetReadedTxt();
+                checkedCsv = _csvProcessed.GetReadedCsv();
             } catch(Exception ex)
             {
                 return new KeyValuePair<bool, string>(false, ex.Message);
@@ -96,9 +105,8 @@ namespace ETL_ConsoleApp.Services
             {
                 foreach(string way in concat)
                 {
-                    Console.WriteLine(way);
                     checkedTxt.Add(way);
-                    FileReport report = _parserService.ParseTxtToReport(way);
+                    FileReport report = _txtParser.ParseTxtToReport(way);
                     long FilesCounter;
                     lock (_locker)
                     {
@@ -111,7 +119,7 @@ namespace ETL_ConsoleApp.Services
                         _invalidLinesCounter += report.InvalidLine;
                         _invalidFilesWays.Add(way);
                     }
-                    await _readed.AddToProccessedAsync(new ReadedFileRecord()
+                    await _txtProcessed.AddToProccessedAsync(new ReadedFileRecord()
                     {
                         Date = DateTime.Now,
                         Way = way
@@ -135,9 +143,8 @@ namespace ETL_ConsoleApp.Services
             {
                 foreach (string way in concat)
                 {
-                    Console.WriteLine(way);
                     checkedCsv.Add(way);
-                    FileReport report = _parserService.ParseCsvToReport(way);
+                    FileReport report = _csvParser.ParseCsvToReport(way);
                     long FilesCounter;
                     lock (_locker)
                     {
@@ -150,7 +157,7 @@ namespace ETL_ConsoleApp.Services
                         _invalidLinesCounter += report.InvalidLine;
                         _invalidFilesWays.Add(way);
                     }
-                    await _readed.AddToProccessedAsync(new ReadedFileRecord()
+                    await _csvProcessed.AddToProccessedAsync(new ReadedFileRecord()
                     {
                         Date = DateTime.Now,
                         Way = way

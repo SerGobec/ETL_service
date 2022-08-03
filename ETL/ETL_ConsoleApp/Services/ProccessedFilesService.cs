@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Services
 {
-    public class ProccessedFilesService : IProccessedTxt, IProcessedCsv
+    public class ProccessedFilesService : IProcessedTxt, IProcessedCsv
     {
         readonly string fileWay;
         object locker = new object();
