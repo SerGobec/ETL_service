@@ -76,13 +76,6 @@ namespace ETL_ConsoleApp.Services
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        private void WriteNotifMessage(string message)
-        {
-            
-            Console.WriteLine("\nResult: " + message + "\n");
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
         private void WriteMessage(string message, MessageTypeResult result)
         {
             if(result == MessageTypeResult.Fault) Console.ForegroundColor = ConsoleColor.Red;

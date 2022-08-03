@@ -1,15 +1,17 @@
-﻿using ETL_ConsoleApp.Models;
+﻿using ETL_ConsoleApp.Interfaces;
+using ETL_ConsoleApp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Services
 {
-    class FileCheckerService
+    class FileCheckerService : ICsvChecker, ITxtChecker
     {
         private DateTime _currentDate;
         private long _checkedFilesCounter;
@@ -33,6 +35,7 @@ namespace ETL_ConsoleApp.Services
             checkedTxt = new List<string>();
             checkedCsv = new List<string>();
             _parserService = new ParserService();
+            _invalidFilesWays = new List<string>();
         }
         public KeyValuePair<bool, string> Create()
         {
@@ -47,7 +50,7 @@ namespace ETL_ConsoleApp.Services
                 if(_ways.OutputFilesFolderWay == "") return new KeyValuePair<bool, string>(false, "Output files way wasn`t set");
                 if(!Directory.Exists(_ways.InputFilesFolderWay)) return new KeyValuePair<bool, string>(false, "Directory for input files doesn`t exist");
                 if(!Directory.Exists(_ways.InputFilesFolderWay)) return new KeyValuePair<bool, string>(false, "Directory for output files doesn`t exist");
-                
+                _checkedFilesCounter = CurentDayProcessedFiles();
             }
             try
             {
@@ -161,6 +164,14 @@ namespace ETL_ConsoleApp.Services
                     });
                 }
             }
+        }
+
+        public int CurentDayProcessedFiles()
+        {
+            if (!Directory.Exists(this._ways.OutputFilesFolderWay + @"\" + this._currentDate.ToString("MM-dd-yyyy"))) return 0;
+            string[] ways =  Directory.GetFiles(this._ways.OutputFilesFolderWay + @"\" + this._currentDate.ToString("MM-dd-yyyy"));
+            if (ways.Length != 0) return ways.Where(el => el.EndsWith(".txt")).Count();
+            return 0;
         }
     }
 }

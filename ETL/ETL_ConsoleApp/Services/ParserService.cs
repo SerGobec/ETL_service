@@ -1,4 +1,5 @@
-﻿using ETL_ConsoleApp.Models;
+﻿using ETL_ConsoleApp.Interfaces;
+using ETL_ConsoleApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Services
 {
-    class ParserService
+    class ParserService : ICsvParser, ITxtParser
     {
         public FileReport ParseTxtToReport(string way)
         {

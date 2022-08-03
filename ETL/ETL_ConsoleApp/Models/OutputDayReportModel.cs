@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Models
 {
-    class OutputDayReportModel
+    public class OutputDayReportModel
     {
         public long ParsedFiles{get;set;}
         public long ParsedLines{get;set;}

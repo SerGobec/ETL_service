@@ -1,4 +1,5 @@
-﻿using ETL_ConsoleApp.Models;
+﻿using ETL_ConsoleApp.Interfaces;
+using ETL_ConsoleApp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ETL_ConsoleApp.Services
 {
-    class ProccessedFilesService
+    public class ProccessedFilesService : IProccessedTxt, IProcessedCsv
     {
         readonly string fileWay;
         object locker = new object();
